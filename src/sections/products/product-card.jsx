@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
-export default function ShopProductCard({ product ,type}) {
+export default function ShopProductCard({ product ,type,count,days}) {
   // const renderStatus = (
   //   <Label
   //     variant="filled"
@@ -55,14 +55,14 @@ export default function ShopProductCard({ product ,type}) {
           // textDecoration: 'line-through',
         }}
       >
-        7 Days
+        {days} Days
       </Typography>
       
     </Typography>
   );
 
   return (
-    <Card>
+    <Card >
       <Box sx={{ pt: '100%', position: 'relative' }}>
         {/* {product.status && renderStatus} */}
 
@@ -76,8 +76,8 @@ export default function ShopProductCard({ product ,type}) {
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           {/* <ColorPreview colors={product.colors} /> */}
-          {renderPrice} 
-          {product.price} &nbsp;
+          {(days)&&renderPrice} 
+          {count} &nbsp;
           {type}
         </Stack>
       </Stack>
@@ -87,5 +87,7 @@ export default function ShopProductCard({ product ,type}) {
 
 ShopProductCard.propTypes = {
   product: PropTypes.object,
-  type : PropTypes.string
+  type : PropTypes.string,
+  count: PropTypes.string,
+  days: PropTypes.string
 };

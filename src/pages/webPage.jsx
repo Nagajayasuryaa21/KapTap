@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { Helmet } from 'react-helmet-async';
+import { useParams } from 'react-router-dom';
 import React, { useState, useEffect} from 'react';
 
 import Box from '@mui/material/Box';
@@ -39,7 +40,7 @@ import TableNoData from 'src/sections/user/table-no-data';
 // import UserTableRow from 'src/sections/user/user-table-row';
 // import UserTableHead from 'src/sections/user/user-table-head';
 import TableEmptyRows from 'src/sections/user/table-empty-rows';
-import UserTableToolbar from 'src/sections/user/user-table-toolbar';
+// import UserTableToolbar from 'src/sections/user/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator, visuallyHidden } from 'src/sections/user/utils';
 // ----------------------------------------------------------------------
 
@@ -51,7 +52,8 @@ import { emptyRows, applyFilter, getComparator, visuallyHidden } from 'src/secti
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function UserPageWEB() {
+    const { id } = useParams();
   const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
@@ -68,7 +70,7 @@ export default function UserPage() {
       const fetchEvents = async () => {
         try {
           // Make a GET request to your API endpoint
-          const response = await fetch(`https://no-code-app-api.vercel.app/api/ecom/events/`);
+          const response = await fetch(`https://no-code-app-api.vercel.app/api/ecom/events/customer/${id}`);
           if (!response.ok) {
             throw new Error('Failed to fetch events');
           }
@@ -84,7 +86,7 @@ export default function UserPage() {
       };
   
       fetchEvents();
-    },[]);
+    },[id]);
 
     const headLabel=[
         { id: 'name', label: 'User Name' },
@@ -98,7 +100,7 @@ export default function UserPage() {
     // Calculate start date as 7 days before today
     const defaultStartDate = today.subtract(7, 'day');
     // Set end date as today
-    const defaultEndDate = today;
+    const defaultEndDate = today.add(60,'day');
 
     // State to store selected dates
     const [startDate, setStartDate] = useState(defaultStartDate);
@@ -125,11 +127,11 @@ export default function UserPage() {
   combinedData.sort((a, b) => new Date(b.date) - new Date(a.date))
   console.log("COMBINED",JSON.stringify(combinedData));
   
-    const handleSort = (e, id) => {
-      const isAsc = orderBy === id && order === 'asc';
-      if (id !== '') {
+    const handleSort = (e, i) => {
+      const isAsc = orderBy === i && order === 'asc';
+      if (i !== '') {
         setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(id);
+        setOrderBy(i);
       }
       
       
@@ -209,9 +211,10 @@ export default function UserPage() {
                 </Typography>
                 
                 
-                    <Grid container spacing={3} gap={2} sx={{ p: 3, display:'flex' }}>
+                    <Grid container spacing={3} gap={2} sx={{ p: 3, display:'flex' }} filterName={filterName}
+                              onFilterName={handleFilterByName}>
                       <Grid>
-                        <Grid mx={2}>
+                        {/* <Grid mx={2}>
                           <Typography variant="secondary2" sx={{ ml: 1 }}>
                               User name
                           </Typography>
@@ -222,7 +225,7 @@ export default function UserPage() {
                               filterName={filterName}
                               onFilterName={handleFilterByName}
                           />
-                        </Grid>
+                        </Grid> */}
                       </Grid>
                       <Grid >
                         <Grid mb={2}>

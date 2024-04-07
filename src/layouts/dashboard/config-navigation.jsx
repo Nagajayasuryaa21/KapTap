@@ -13,27 +13,10 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'View',
+    title: 'Customer',
     path: '/user',
-    icon: icon('ic_blog'),
-  },
-  {
-    title: 'Add To Cart',
-    path: '/products',
-    icon: icon('ic_cart'),
-  },
-  {
-    title: 'Order Cancel',
-    path: '/404',
-    icon: icon('ic_disabled'),
-  },
-  
-  // {
-  //   title: 'login',
-  //   path: '/login',
-  //   icon: icon('ic_lock'),
-  // },
-  
+    icon: icon('ic_user'),
+  },  
 ];
 
 export default navConfig;

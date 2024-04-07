@@ -1,10 +1,12 @@
 // import { faker } from '@faker-js/faker';
-
-import React, { useState} from 'react';
+import dayjs from 'dayjs';
+import React, { useState,useEffect} from 'react';
 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+
+import {product_data } from 'src/_mock/products';
 
 // import Iconify from 'src/components/iconify';
 import { ProductsView } from 'src/sections/products/view';
@@ -14,6 +16,7 @@ import { ProductsView } from 'src/sections/products/view';
 // import AppCurrentVisits from '../app-current-visits';
 // import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
+
 // import AppTrafficBySite from '../app-traffic-by-site';
 // import AppCurrentSubject from '../app-current-subject';
 // import AppConversionRates from '../app-conversion-rates';
@@ -32,15 +35,89 @@ const Data = {
     image: '/assets/icons/glass/ic_glass_buy.png',
   },
   cancel: {
-    type: "cancel",
-    name: 'Cancel Order',
+    type: "order",
+    name: 'Order',
     image: '/assets/icons/glass/ic_glass_message.png',
   },
 };
 
 export default function AppView() {
   const [selected, setSelected] = useState(Data.view);
+  const today = dayjs();
+  const [events,setEvents] = useState([]);
+  // Calculate start date as 7 days before today
+  const defaultStartDate = today.subtract(7, 'day');
+  // Set end date as today
+  const defaultEndDate = today;
 
+  useEffect(()=>{
+    console.log("HELLO-Dashboard");
+    const fetchEvents = async () => {
+      try {
+        // Make a GET request to your API endpoint
+        const response = await fetch(`https://no-code-app-api.vercel.app/api/ecom/events/`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch events');
+        }
+        // Parse the JSON response
+        const eventData = await response.json();
+        // Set the events state with the fetched data
+        console.log(eventData);
+        setEvents(eventData);
+      //   setEvents(eventData);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  },[]);
+
+  // State to store selected dates
+  const [startDate, setStartDate] = useState(defaultStartDate);
+  const [endDate, setEndDate] = useState(defaultEndDate);
+
+  const filteredEvents = events.filter(e => {
+    const eventDate = new Date(e.date);
+    return eventDate >= startDate && eventDate <= endDate;
+  });
+  console.log(filteredEvents);
+
+  // Function to handle date change
+  const handleStartDateChange = (newStartDate) => {
+    setStartDate(newStartDate);
+  };
+
+  const handleEndDateChange = (newEndDate) => {
+    setEndDate(newEndDate);
+  };
+
+  const numberOfDays = endDate.diff(startDate, 'day') + 1;
+  console.log(JSON.stringify(product_data));
+  const totalViewsCount = events.reduce((count, item) => {
+    if (item.type === "view") {
+      count+=1;
+    }
+    return count;
+  }, 0);
+  const totaladdCount = events.reduce((count, item) => {
+    if (item.type === "add") {
+      count+=1;
+    }
+    return count;
+  }, 0);
+  const totalorderCount = events.reduce((count, item) => {
+    if (item.type === "order") {
+      count+=1;
+    }
+    return count;
+  }, 0);
+  const counts = filteredEvents.reduce((acc, item) => {
+    if (item.type === selected.type) {
+      acc[item.product] = (acc[item.product] || 0) + 1;
+    }
+    return acc;
+  }, {});
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -59,7 +136,7 @@ export default function AppView() {
         >
           <AppWidgetSummary
             title="Views"
-            total={714000}
+            total={totalViewsCount}
             color="success"
             icon={<img alt="icon" src="/assets/icons/glass/eye-scan-protection.png" />}
           />
@@ -76,7 +153,7 @@ export default function AppView() {
         >
           <AppWidgetSummary
             title="Add to cart"
-            total={1723315}
+            total={totaladdCount}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
           />
@@ -92,8 +169,8 @@ export default function AppView() {
           style={{ cursor: 'pointer' }}
         >
           <AppWidgetSummary
-            title="Cancel Order"
-            total={234}
+            title="Order"
+            total={totalorderCount}
             color="error"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
           />
@@ -264,7 +341,7 @@ export default function AppView() {
           />
         </Grid> */}
         <Grid>
-          <ProductsView data = {selected}/>
+          <ProductsView data = {selected} startDate={startDate} endDate={endDate} handleStartDateChange={handleStartDateChange} handleEndDateChange={handleEndDateChange} days={numberOfDays} counts={counts} events={filteredEvents}/>
         </Grid>
       </Grid>
     </Container>

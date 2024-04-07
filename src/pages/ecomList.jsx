@@ -1,5 +1,7 @@
 // import { useState } from 'react';
-import PropTypes from 'prop-types';
+import dayjs from 'dayjs';
+import React, { useState} from 'react';
+// import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
@@ -13,7 +15,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { product_data } from 'src/_mock/products';
 
-import ProductCard from '../product-card';
+import ProductCard from 'src/sections/products/product-card';
 // import ProductSort from '../product-sort';
 // import ProductFilters from '../product-filters';
 
@@ -23,13 +25,12 @@ import ProductCard from '../product-card';
 
 // ----------------------------------------------------------------------
 
-export default function ProductsView({data,startDate,endDate,handleStartDateChange,handleEndDateChange,days,counts,events}) {
-  const { image, type,name} = data;
+export default function ProductsViewECOM() {
   // const [openFilter, setOpenFilter] = useState(false);
-  const viewProductIds = events
-  .filter(item => item.type === type)
-  .map(item => item.product);
-  console.log(viewProductIds);
+//   const viewProductIds = events
+//   .filter(item => item.type === type)
+//   .map(item => item.product);
+//   console.log(viewProductIds);
   // const handleOpenFilter = () => {
   //   setOpenFilter(true);
   // };
@@ -37,19 +38,17 @@ export default function ProductsView({data,startDate,endDate,handleStartDateChan
   // const handleCloseFilter = () => {
   //   setOpenFilter(false);
   // };
+  const today = dayjs();
+  const [startDate, setStartDate] = useState(today);
+  const handleStartDateChange = (newStartDate) => {
+    setStartDate(newStartDate);
+  };
 
   return (
     <Container maxWidth='xl'>
       <Typography variant="h4" sx={{ mb: 5 }}>
         Products
       </Typography>
-
-      <div style={{display:'flex'}}>
-          <img alt="icon" src={image} width="50px" height="50px"/>
-          <Typography variant="h4" sx={{pl:2 }}>
-            {name} Products report
-          </Typography>
-        </div>
       <Stack
         direction="row"
         alignItems="center"
@@ -71,7 +70,7 @@ export default function ProductsView({data,startDate,endDate,handleStartDateChan
             <Grid >
               <Grid>
                 <Typography variant="secondary2" sx={{ ml: 1 }}>
-                  Start Date & Time
+                  Date & Time
                 </Typography>
               </Grid>
               <Grid>
@@ -81,19 +80,6 @@ export default function ProductsView({data,startDate,endDate,handleStartDateChan
               </Grid>
               
             </Grid>
-            <Grid >
-              <Grid>
-                <Typography variant="secondary2" sx={{ ml: 1 }}>
-                  End Date & Time
-                </Typography>
-              </Grid>
-              <Grid>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker value={endDate} onChange={handleEndDateChange}/>
-                </LocalizationProvider>  
-              </Grid>
-            </Grid>
-            
           </Grid>
       </Stack>
 
@@ -101,10 +87,9 @@ export default function ProductsView({data,startDate,endDate,handleStartDateChan
  
         {product_data.map((product) => (
           // (product.type === type)&&
-          viewProductIds.includes(product.id) && 
           <Grid key={product.id} xs={12} sm={8} md={3}>
-            <a style={{cursor:'pointer',textDecoration:'none'}} href={`/product/${product.id}`}>
-              <ProductCard product={product} type={name} count={counts[product.id]} days={days}/>
+            <a style={{cursor:'pointer',textDecoration:'none'}} href={`/ecom-product/${product.id}`}>
+              <ProductCard product={product} type='' count="" days=""/>
             </a>
           </Grid>
         ))}
@@ -115,18 +100,4 @@ export default function ProductsView({data,startDate,endDate,handleStartDateChan
   );
 }
 
-ProductsView.propTypes = {
-    data:PropTypes.shape({
-    type: PropTypes.string,
-    image: PropTypes.string,
-    name: PropTypes.string
-  }),
-  startDate:PropTypes.object,
-  endDate:PropTypes.object,
-  handleStartDateChange:PropTypes.func,
-  handleEndDateChange:PropTypes.func,
-  days:PropTypes.string,
-  counts:PropTypes.object,
-  events:PropTypes.object
 
-};
